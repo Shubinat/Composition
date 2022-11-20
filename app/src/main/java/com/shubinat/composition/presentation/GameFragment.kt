@@ -25,7 +25,9 @@ class GameFragment : Fragment() {
     }
 
     private fun parseArguments() {
-        level = requireArguments().getSerializable(KEY_LEVEL) as Level
+        requireArguments().getParcelable<Level>(KEY_LEVEL)?.let {
+            level = it
+        }
     }
 
     override fun onCreateView(
@@ -42,7 +44,8 @@ class GameFragment : Fragment() {
         binding.tvSum.setOnClickListener {
             requireActivity().supportFragmentManager.beginTransaction()
                 .replace(R.id.main_container, GameFinishedFragment.newInstance(
-                    GameResult(true, 1,2, GameSettings(
+                    GameResult(true, 1,2,
+                        GameSettings(
                         1,
                         2,
                         3,
@@ -69,7 +72,7 @@ class GameFragment : Fragment() {
         fun newInstance(level: Level): GameFragment {
             return GameFragment().apply {
                 arguments = Bundle().apply {
-                    putSerializable(KEY_LEVEL, level)
+                    putParcelable(KEY_LEVEL, level)
                 }
             }
         }
