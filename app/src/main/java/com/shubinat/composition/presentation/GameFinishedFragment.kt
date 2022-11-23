@@ -1,10 +1,12 @@
 package com.shubinat.composition.presentation
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.shubinat.composition.R
@@ -26,7 +28,7 @@ class GameFinishedFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        showGameResult()
         binding.buttonRetry.setOnClickListener {
             retryGame()
         }
@@ -46,6 +48,47 @@ class GameFinishedFragment : Fragment() {
         }
     }
 
+    private fun showGameResult() {
+        with(binding) {
+            emojiResult.setImageResource(getSmileResId())
+
+            tvRequiredAnswers.text = String.format(
+                requireContext().resources.getString(R.string.required_score),
+                gameResult.gameSettings.minCountOfRightAnswers
+            )
+
+            tvScoreAnswers.text = String.format(
+                requireContext().resources.getString(R.string.score_answers),
+                gameResult.countOfRightAnswers
+            )
+
+            tvRequiredPercentage.text = String.format(
+                requireContext().resources.getString(R.string.required_percentage),
+                gameResult.gameSettings.minPercentOfRightAnswers
+            )
+
+            tvScorePercentage.text = String.format(
+                requireContext().resources.getString(R.string.score_percentage),
+                getPercentOfRightAnswers()
+            )
+        }
+    }
+
+    private fun getPercentOfRightAnswers(): Int = with(gameResult) {
+        return if (countOfQuestions == 0) {
+            0
+        } else {
+            ((countOfRightAnswers / countOfQuestions.toDouble()) * 100).toInt()
+        }
+    }
+
+    private fun getSmileResId(): Int {
+        return if (gameResult.winner) {
+            R.drawable.ic_smile
+        } else {
+            R.drawable.ic_sad
+        }
+    }
 
     private fun retryGame() {
         requireActivity().supportFragmentManager.popBackStack(
